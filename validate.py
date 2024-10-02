@@ -5,14 +5,14 @@ from data import AVLip
 import torch.utils.data
 from models import build_model
 from sklearn.metrics import average_precision_score, confusion_matrix, accuracy_score
-
+from tqdm import tqdm
 
 def validate(model, loader, gpu_id):
     print("validating...")
     device = torch.device(f"cuda:{gpu_id[0]}" if torch.cuda.is_available() else "cpu")
     with torch.no_grad():
         y_true, y_pred = [], []
-        for img, crops, label in loader:
+        for img, crops, label in tqdm(loader, desc="Validating", leave=False):
             img_tens = img.to(device)
             crops_tens = [[t.to(device) for t in sublist] for sublist in crops]
             features = model.get_features(img_tens).to(device)
